@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>HopOnBoard</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background-color: #000;
+                color: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            header {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            header img {
+                width: 50px;
+            }
+            nav {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+            nav a {
+                color: #fff;
+                text-decoration: none;
+                margin: 0 10px;
+                cursor: pointer;
+            }
+            .main-content {
+                display: flex;
+                justify-content: space-between;
+                width: 100%;
+            }
+            .route-form {
+                background-color: #1a1a1a;
+                padding: 20px;
+                border-radius: 10px;
+                width: 48%;
+                margin-bottom: 20px;
+            }
+            .route-form input,
+            .route-form button {
+                width: 100%;
+                padding: 10px;
+                margin: 10px 0;
+                border: none;
+                border-radius: 5px;
+            }
+            .route-form button {
+                background-color: #007bff;
+                color: #fff;
+                cursor: pointer;
+            }
+            .featured-routes {
+                margin-bottom: 20px;
+            }
+            .route {
+                background-color: #1a1a1a;
+                padding: 20px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+            }
+            .route img {
+                width: 200px;
+                border-radius: 10px;
+                margin-right: 20px;
+            }
+            .route h3 {
+                margin: 0 0 10px 0;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 20px;
+            }
+            .footer a {
+                color: #fff;
+                text-decoration: none;
+                display: block;
+                margin: 5px 0;
+                cursor: pointer;
+            }
+            .additional-section {
+                width: 48%;
+                background-color: #1a1a1a;
+                padding: 20px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .additional-section img {
+                max-width: 100%;
+                border-radius: 10px;
+            }
+            .about-section {
+                display: none;
+                background-color: #1a1a1a;
+                padding: 20px;
+                border-radius: 10px;
+                margin-top: 20px;
+            }
+            .about-section h2 {
+                margin-top: 0;
+            }
+            .stops-list {
+                list-style: none;
+                padding: 0;
+            }
+            .stops-list li {
+                margin-bottom: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <img src="logo.png" alt="HopOnBoard Logo" />
+                <h1>HopOnBoard</h1>
+            </header>
+            <nav>
+                <a href="index1.html">Home</a>
+                <a href="route-selection.html">Route Selection</a>
+                <a href="tracking.html">Tracking</a>
+                
+            </nav>
+            <div class="main-content">
+                <div class="route-form">
+                    <h2>Find Nearby Bus Stops</h2>
+                    <input type="text" id="latitude" placeholder="Start location (lat,long)" />
+                    <input type="text" id="longitude" placeholder="End location (lat,long)" />
+                    <button id="find-stops">Find Bus Stops</button>
+                </div>
+                <div class="additional-section">
+                    <img src="track.jpg" alt="Track Your Bus" />
+                </div>
+
+                <!--  -->
+            </div>
+            <div class="footer">
+                <a href="about.html" id="about-us">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <div class="about-section" id="about-section">
+                <h2>About Us</h2>
+                <p>
+                    HopOnBoard is dedicated to providing the best public
+                    transportation services in the city. Our mission is to offer
+                    reliable and comfortable transit solutions for all
+                    passengers. With a wide range of routes and promotions, we
+                    ensure that you get to your destination efficiently and
+                    affordably. Thank you for choosing HopOnBoard!
+                </p>
+            </div>
+            <ul class="stops-list" id="stops-list"></ul>
+        </div>
+        <script>
+            document
+                .getElementById("about-us")
+                .addEventListener("click", function () {
+                    var aboutSection = document.getElementById("about-section");
+                    if (
+                        aboutSection.style.display === "none" ||
+                        aboutSection.style.display === ""
+                    ) {
+                        aboutSection.style.display = "block";
+                    } else {
+                        aboutSection.style.display = "none";
+                    }
+                });
+
+            document
+                .getElementById("find-stops")
+                .addEventListener("click", async function () {
+                    const lat = document.getElementById("latitude").value;
+                    const lon = document.getElementById("longitude").value;
+                    const radius = 1000; // in meters
+
+                    const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];node(around:${radius},${lat},${lon})[highway=bus_stop];out body;`;
+
+                    try {
+                        const response = await fetch(overpassUrl);
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        const data = await response.json();
+                        const stopsList = document.getElementById("stops-list");
+                        stopsList.innerHTML = "";
+                        const stops = [];
+                        data.elements.forEach((stop) => {
+                            const li = document.createElement("li");
+                            li.textContent = `Bus Stop: ${stop.tags.name || "Unnamed"} - Lat: ${stop.lat}, Lon: ${stop.lon}`;
+                            stopsList.appendChild(li);
+                            stops.push({
+                                name: stop.tags.name || "Unnamed",
+                                lat: stop.lat,
+                                lon: stop.lon,
+                            });
+                        });
+                        localStorage.setItem("busStops", JSON.stringify(stops));
+                        window.location.href = "route-selection.html";
+                    } catch (error) {
+                        console.error(
+                            "There was a problem with the fetch operation:",
+                            error,
+                        );
+                    }
+                });
+        </script>
+    </body>
+</html>

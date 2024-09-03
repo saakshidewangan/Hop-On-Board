@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Route Selection - HopOnBoard</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0;
+                padding: 0;
+                background-color: #f4f4f4;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background-color: #000;
+                color: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            header {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            header img {
+                width: 50px;
+            }
+            nav {
+                display: flex;
+                justify-content: center;
+                margin-bottom: 20px;
+            }
+            nav a {
+                color: #fff;
+                text-decoration: none;
+                margin: 0 10px;
+            }
+            .route-list {
+                background-color: #fff;
+                color: #000;
+                padding: 20px;
+                border-radius: 10px;
+            }
+            .route {
+                background-color: #f4f4f4;
+                padding: 15px;
+                border-radius: 10px;
+                margin-bottom: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .route h3 {
+                margin: 0 0 10px 0;
+            }
+            .route p {
+                margin: 5px 0;
+            }
+            .route button {
+                width: 100%;
+                padding: 10px;
+                background-color: #000;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 20px;
+            }
+            .footer a {
+                color: #fff;
+                text-decoration: none;
+                display: block;
+                margin: 5px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <img src="logo.png" alt="HopOnBoard Logo" />
+                <h1>HopOnBoard</h1>
+            </header>
+            <nav>
+                <a href="index1.html">Home</a>
+                <a href="#">Route Selection</a>
+                <a href="tracking.html">Tracking</a>
+                
+            </nav>
+            <div class="route-list" id="route-list"></div>
+            <div class="footer">
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const stops = JSON.parse(localStorage.getItem("busStops"));
+                const routeList = document.getElementById("route-list");
+                if (stops && stops.length > 0) {
+                    stops.forEach((stop) => {
+                        const routeDiv = document.createElement("div");
+                        routeDiv.className = "route";
+                        routeDiv.innerHTML = `<h3>Bus Stop: ${stop.name}</h3><p>Latitude: ${stop.lat}</p><p>Longitude: ${stop.lon}</p>`;
+                        routeList.appendChild(routeDiv);
+                    });
+                } else {
+                    routeList.innerHTML =
+                        "<p>No bus stops found. Please go back and search again.</p>";
+                }
+            });
+        </script>
+    </body>
+</html>
